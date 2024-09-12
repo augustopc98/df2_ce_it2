@@ -6,9 +6,9 @@ import com.example.demo.services.CustomerOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -18,12 +18,12 @@ public class CustomerOrderController {
     private CustomerOrderService customerOrderService;
 
     @PostMapping
-    public CustomerOrder createOrder(@RequestBody CustomerOrder order) {
+    public CustomerOrder createOrder(@RequestBody @Valid CustomerOrder order) {
         return customerOrderService.createOrder(order.getId(), order.getCustomerEmail(), order.getCustomerAddress(), new Date(), order.getItems());
     }
 
     @PostMapping("/{orderId}/items")
-    public void addOrderItem(@PathVariable Long orderId, @RequestBody OrderItem item) {
+    public void addOrderItem(@PathVariable Long orderId, @Valid @RequestBody OrderItem item) {
         customerOrderService.addOrderItem(orderId, item);
     }
 

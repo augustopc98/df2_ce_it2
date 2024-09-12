@@ -31,12 +31,29 @@ public class CustomerOrder {
         this.deliveryStatus = "PENDING";
     }
 
-    public void addOrderItem(OrderItem item) {
-        items.add(item);
+    // Add getter methods for accessing private fields
+    public Long getId() {
+        return id;
     }
 
-    public void removeOrderItem(OrderItem item) {
-        items.remove(item);
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public String getCustomerAddress() {
+        return customerAddress;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public String getDeliveryStatus() {
+        return deliveryStatus;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
     }
 
     public BigDecimal calculateTotal() {
@@ -53,5 +70,12 @@ public class CustomerOrder {
         this.deliveryStatus = status;
     }
 
-    // Getters and Setters
+    // New methods to handle adding and removing items
+    public void addOrderItem(OrderItem item) {
+        items.add(item);
+    }
+
+    public void removeOrderItem(OrderItem item) {
+        items.remove(item);
+    }
 }

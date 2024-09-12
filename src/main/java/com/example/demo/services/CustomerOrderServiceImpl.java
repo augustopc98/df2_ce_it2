@@ -6,12 +6,13 @@ import com.example.demo.repositories.CustomerOrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class CustomerOrderServiceImpl implements CustomerOrderService {
 
     @Autowired
@@ -25,47 +26,35 @@ public class CustomerOrderServiceImpl implements CustomerOrderService {
 
     @Override
     public void addOrderItem(Long orderId, OrderItem item) {
-        Optional<CustomerOrder> optionalOrder = customerOrderRepository.findById(orderId);
-        if(optionalOrder.isPresent()) {
-            CustomerOrder order = optionalOrder.get();
-            order.addOrderItem(item);
-            customerOrderRepository.save(order);
-        }
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.getItems().add(item);
+        customerOrderRepository.save(order);
     }
 
     @Override
-    public void removeOrderItem(Long orderId, Long orderItemId) {
-        Optional<CustomerOrder> optionalOrder = customerOrderRepository.findById(orderId);
-        if(optionalOrder.isPresent()) {
-            CustomerOrder order = optionalOrder.get();
-            order.removeOrderItem(new OrderItem(orderItemId, null, 0, null));
-            customerOrderRepository.save(order);
-        }
+    public void removeOrderItem(Long orderId, Long itemId) {
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.getItems().removeIf(item -> item.getId().equals(itemId));
+        customerOrderRepository.save(order);
     }
 
     @Override
     public BigDecimal calculateTotal(Long orderId) {
-        Optional<CustomerOrder> optionalOrder = customerOrderRepository.findById(orderId);
-        return optionalOrder.map(CustomerOrder::calculateTotal).orElse(BigDecimal.ZERO);
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return order.calculateTotal();
     }
 
     @Override
     public void sendForDelivery(Long orderId) {
-        Optional<CustomerOrder> optionalOrder = customerOrderRepository.findById(orderId);
-        if(optionalOrder.isPresent()) {
-            CustomerOrder order = optionalOrder.get();
-            order.sendForDelivery();
-            customerOrderRepository.save(order);
-        }
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.sendForDelivery();
+        customerOrderRepository.save(order);
     }
 
     @Override
     public void updateDeliveryStatus(Long orderId, String status) {
-        Optional<CustomerOrder> optionalOrder = customerOrderRepository.findById(orderId);
-        if(optionalOrder.isPresent()) {
-            CustomerOrder order = optionalOrder.get();
-            order.updateDeliveryStatus(status);
-            customerOrderRepository.save(order);
-        }
+        CustomerOrder order = customerOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        order.updateDeliveryStatus(status);
+        customerOrderRepository.save(order);
     }
 }
